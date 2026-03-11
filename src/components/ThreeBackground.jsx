@@ -140,11 +140,11 @@ export default function ThreeBackground() {
     const netGroup = new THREE.Group()
     const svcPos = [[0,0,0],[3.6,1.4,0],[3.6,-1.4,0],[-3.6,1.4,0],[-3.6,-1.4,0],[0,3.2,0]]
     const snGeo = new THREE.SphereGeometry(0.36, 10, 10)
-    svcPos.forEach(p => netGroup.add(
-      Object.assign(new THREE.Mesh(snGeo, sm(0x00d4ff, 0.62)), { position: new THREE.Vector3(...p) })
-    ))
-    // fix positions properly
-    netGroup.children.forEach((mesh, i) => { if (svcPos[i]) mesh.position.set(...svcPos[i]) })
+    svcPos.forEach(([x, y, z]) => {
+      const node = new THREE.Mesh(snGeo, sm(0x00d4ff, 0.62))
+      node.position.set(x, y, z)
+      netGroup.add(node)
+    })
     const edges = [[0,1],[0,2],[0,3],[0,4],[0,5],[1,2],[3,4],[1,5]]
     edges.forEach(([a, b]) => {
       const g = new THREE.BufferGeometry().setFromPoints([
@@ -251,12 +251,12 @@ export default function ThreeBackground() {
     window.addEventListener('resize', handleResize)
 
     // ── Animation loop ─────────────────────────────────────
-    const clock = new THREE.Clock()
+    const startTime = performance.now()
     let animId
 
     function animate() {
       animId = requestAnimationFrame(animate)
-      const t = clock.getElapsedTime()
+      const t = (performance.now() - startTime) / 1000
 
       // Stars drift
       stars.rotation.y = t * 0.014
